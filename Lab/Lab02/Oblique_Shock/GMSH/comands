@@ -1,0 +1,4 @@
+gmsh -2 mesh.geo
+# -2 means the mesh shall be 2D
+
+gmesh -2 -format su2 mesh.msh
