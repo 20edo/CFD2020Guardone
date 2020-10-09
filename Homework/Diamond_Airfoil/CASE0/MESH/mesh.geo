@@ -2,15 +2,19 @@
 
 c = 1;		// Chord of the profile
 R = 100*c;	// Radius of the far-field boundary
-D = 0.2;	// Height of the airfoil
+th = 5;	// Angle of the airfoil in degrees
 h = 0.05;	// Size of the elements on the airfoil
 H = 5;		// Size of the elementts on the farfield
+
+//
+D= c/2*0.9961946980917455; 	// Height of the airfoil
+
 //================= POINTS
 // farfield
 Point(1) = {	R,	0,	0,	H};
 Point(2) = {	0,	R,	0,	H};
-Point(3) = {	-R,     0,      0,      H};
-Point(4) = {    0,      -R,     0,      H};
+Point(3) = {	-R,     0,	0,      H};
+Point(4) = {    0,      -R,    0,      H};
 //airfoil
 Point(5) = {	0,	0,	0,	h};
 Point(6) = {	c/2,	D/2,	0,	h};
