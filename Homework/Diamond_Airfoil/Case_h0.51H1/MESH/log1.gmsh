@@ -1,0 +1,21 @@
+Info    : Running 'gmsh -2 -nt 8 mesh.geo' [Gmsh 4.4.1, 1 node, max. 8 threads]
+Info    : Started on Mon Oct 12 09:57:54 2020
+Info    : Reading 'mesh.geo'...
+Info    : Done reading 'mesh.geo'
+Info    : Meshing 1D...
+Info    : Meshing curve 5 (Line)
+Info    : Meshing curve 7 (Line)
+Info    : Meshing curve 1 (Circle)
+Info    : Meshing curve 4 (Circle)
+Info    : Meshing curve 2 (Circle)
+Info    : Meshing curve 6 (Line)
+Info    : Meshing curve 3 (Circle)
+Info    : Meshing curve 8 (Line)
+Info    : Done meshing 1D (0.00236901 s)
+Info    : Meshing 2D...
+Info    : Meshing surface 1 (Plane, Delaunay)
+Info    : Done meshing 2D (1.8631 s)
+Info    : 59503 vertices 119014 elements
+Info    : Writing 'mesh.msh'...
+Info    : Done writing 'mesh.msh'
+Info    : Stopped on Mon Oct 12 09:57:56 2020

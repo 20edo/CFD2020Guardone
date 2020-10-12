@@ -7,7 +7,7 @@ h = 0.05;	// Size of the elements on the airfoil
 H = 5;		// Size of the elementts on the farfield
 
 //
-D= c/2*0.9961946980917455; 	// Height of the airfoil
+D=0.2; 	// Height of the airfoil
 
 //================= POINTS
 // farfield

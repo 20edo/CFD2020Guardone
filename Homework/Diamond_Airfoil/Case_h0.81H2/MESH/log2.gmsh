@@ -1,0 +1,15 @@
+Info    : Running 'gmsh -2 -nt 8 -format su2 mesh.msh' [Gmsh 4.4.1, 1 node, max. 8 threads]
+Info    : Started on Mon Oct 12 10:05:36 2020
+Info    : Reading 'mesh.msh'...
+Info    : 19945 nodes
+Info    : 39890 elements
+Info    : Done reading 'mesh.msh'
+Info    : Meshing 1D...
+Info    : Done meshing 1D (0.00254123 s)
+Info    : Meshing 2D...
+Info    : Done meshing 2D (0.000738456 s)
+Info    : 19945 vertices 39898 elements
+Info    : Writing 'mesh.su2'...
+Info    : Writing 39570 elements and 19945 vertices
+Info    : Done writing 'mesh.su2'
+Info    : Stopped on Mon Oct 12 10:05:36 2020
