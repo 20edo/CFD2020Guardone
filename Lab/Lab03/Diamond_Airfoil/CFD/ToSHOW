@@ -1,0 +1,8 @@
+Things to show:
+- Difference betewwn first and second order solutions
+- Entropy values
+- Mesh convergence
+- Try different 1st and 2nd order methods
+- Show the difference wrt exact solution
+
+Suggestion use HLLC with slop limiter, 0.1 parameter V.. filter
