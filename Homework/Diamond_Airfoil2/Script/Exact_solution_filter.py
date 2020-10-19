@@ -1,3 +1,6 @@
+import numpy as np
+from math import mt
+
 pdi = self.GetInput()
 pdo = self.GetOutput()
 
@@ -18,7 +21,7 @@ for i in range(n):
     
     # Freestream zone
     if x < 5:
-        V_exact.InsertNextTuple3(100, 10, 0)
+        V_exact.InsertNextTuple3(np.cos(mt.pi+x), 10, 0)
     else:
         V_exact.InsertNextTuple3(0, -10, 0)
     

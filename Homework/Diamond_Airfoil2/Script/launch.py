@@ -55,14 +55,17 @@ for i in profile_h:
 		meshTIME = time.time()-meshTime	# Stop mesh timer
 
 		# Copy config file
-		os.chdir(path)
-		os.system('cp CASE0/config.cfg ' + dirname)
+		os.chdir(path + '/' + dirname)
+		os.system('mkdir CFD')
+		os.system('cp '+ path + '/CASE0/config.cfg .')
 
 		# RUN
-		os.chdir(dirname)
 		simTime = time.time()			# Start simulation timer
 		os.system('mpirun -np 4 SU2_CFD config.cfg 2>&1 | tee log.su2cfd')
 		simTIME = time.time() - simTime	# Stop simulation timer
+		# Move files to the CFD folder
+		os.system('mv *v* CFD')
+		os.system('mv *c* CFD')
 
 		# Case post-process
 		totTIME = time.time() - totTime	# Stop total timer
