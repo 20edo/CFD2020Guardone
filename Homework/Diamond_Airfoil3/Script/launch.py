@@ -10,8 +10,8 @@ import subprocess as sbp
 import time
 
 # Simulations parameters
-profile_h=0.01*np.arange(1,100,10)	# Mesh size at the profile buondary
-freestream_H=np.arange(1,10)		# Mesh size at the freestream boundary
+profile_h=0.1*np.arange(1,100,10)	# Mesh size at the profile buondary
+freestream_H=5*np.arange(1,10)		# Mesh size at the freestream boundary
 
 # Change location to main folder
 os.chdir(path)

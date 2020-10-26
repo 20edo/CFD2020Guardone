@@ -43,16 +43,9 @@ alpha = 0
 gamma = 1.4 
 Pa = 1e5
 Ta = 300
-R = 8314/29
+R = 287.058
 Ma = 2
 rhoa = Pa/R/Ta
-
-# caso 1 - shock tra c ed f, continuità tra e ed g 
-# caso 2 - shock tra e ed g, continuità tra c ed f 
-# caso 3 - shock sopra, ventaglio di espansione sotto
-# caso 4 - shock sotto, ventaglio di espansione sopra
-# caso 5 - shock sopra e sotto
-case = 5
 
 # Recall values calculated by previous script
 
@@ -60,37 +53,37 @@ case = 5
 # Zone b
 Mb = 1.5914539462643529
 Pb = 182382.07623952895
-rhob = 1.774837188458829
+rhob = 1.7725597668291357
 Tb = 358.4359925960558
 
 # Zone c
 Mc = 2.41993911
 Pc = 50752.27539999
-rhoc = 0.71179311
+rhoc = 0.71087976
 Tc = 248.70797802
 
 # Zone d
 Md = 1.5914539462643529
 Pd = 182382.07623952895
-rhod = 1.774837188458829
-Td = 358.4359925960558 
+rhod = 1.7725597668291357
+Td = 358.4359925960558
 
 # Zone e
 Me = 2.41993911
 Pe = 50752.27539999
-rhoe = 0.71179311
+rhoe = 0.71087976
 Te = 248.70797802
 
 # Zone f
 Mf = 1.9633213799324059
 Pf = 100313.00454574
-rhof = 1.14749793
+rhof = 1.1460255
 Tf = 304.92519096
 
-# Zone g
+# Zone f
 Mg = 1.9633213799324059
 Pg = 100313.00454574
-rhog = 1.14749793
+rhog = 1.1460255
 Tg = 304.92519096
 
 # ============================================ Angles
@@ -99,21 +92,21 @@ Tg = 304.92519096
 beta_top  = 40.77535672 * pi/180
 
 # Bottom shock
-beta_bot = 40.77535672 * pi/180
+beta_bot = -40.77535672 * pi/180
 
 # Top expansion
 mu1_top = 50.23888440578768 * pi/180
-mu2_top = 35.718055565168704 * pi/180
+mu2_top = 13.098190617128276 * pi/180
 
 # Bottom expansion
-mu1_bot = 50.23888440578768 * pi/180
-mu2_bot = 35.718055565168704 * pi/180
+mu1_bot = -50.23888440578768 * pi/180
+mu2_bot = -13.098190617128276 * pi/180
 
 # Top rear shock
 beta_top_rear = 22.75160624 * pi/180
 
 # Bottom rear shock
-beta_bot_rear = 22.75160624 * pi/180
+beta_bot_rear = -22.75160624 * pi/180
 
 # Slip line 
 delta_slip = 0
@@ -124,7 +117,7 @@ def prandtl_meyer_angle(M):
   " This function returns the prandtl meyer angle given the Mach number"
   return sqrt((gamma+1)/(gamma-1))*atan(sqrt((gamma-1)/(gamma+1)*(M**2-1)))-atan(sqrt(M**2-1))
 
-def isoentropic(Ml,M2,gamma):
+def isoentropic(M1,M2,gamma):
   "This function calculates the fraction of actual values of P, rho and T with respect to the state 1" 
   "in an isoentropic expansion of a gas with given isoentropi coefficient gamma between the Mach values Ml and M2"
   P_rapp = (1 + (gamma-1)/2*M1**2)**(gamma/(gamma-1)) / (1 + (gamma-1)/2*M2**2)**(gamma/(gamma-1)) 
@@ -150,7 +143,7 @@ coords.SetName("Coordinates")
 V_exact.SetName("Exact Velocity")
 P_exact.SetName("Exact Pressure")
 rho_exact.SetName("Exact Density")
-M_exact.SetName("Exact Mack")
+M_exact.SetName("Exact Mach")
 T_exact.SetName("Exact Temperature")
 
 # Set number of components
@@ -171,9 +164,20 @@ for i in range(n):
 	
 	p=pdi.GetPoint(i)
 	x, y, z = p
+	
+	# Naso
+	if x == 0.0 and y == 0.0:
+		P_rapp, rho_rapp, T_rapp = isoentropic(Ma, 0.0 , gamma)
+		P = Pa*P_rapp
+		T = Ta * T_rapp
+		rho = rho_rapp * rhoa
+		c = sqrt(gamma*R*T)
+		M = 0
+		v = 0
+		vx, vy = 0,0
 		
 	# Zone a
-	if y - tan(beta_top)*x > 0 and y - tan(-beta_bot)*x > 0:
+	elif y - tan(beta_top)*x > 0 or  y - tan(beta_bot)*x < 0  :
 		P = Pa
 		T = Ta
 		rho = rhoa
@@ -210,12 +214,14 @@ for i in range(n):
 		k_minus = theta1 + prandtl_meyer_angle(M1)
 		dy_dx = (y-y_top)/(x-x_top)
 		def func1(x,*data):
-			dy_dx, k_plus = data
-			return [tan(x[0]-asin(1/x[1]))-dy_dx, x[0]-prandtl_meyer_angle(x[1])-k_plus]   # x[0] = theta_p, x[1] = M_p
+			dy_dx, k_minus = data
+			return [tan(x[0]+asin(1/x[1]))-dy_dx,
+x[0]+prandtl_meyer_angle(x[1])-k_minus]   # x[0] = theta_p, x[1] = M_p
 
 		data = (dy_dx, k_minus)
 		[theta_p, M_p] = fsolve(func1, [theta1, M1], args = data)
 
+		M = M_p
 		P_rapp, rho_rapp, T_rapp = isoentropic(M1, M_p, gamma)
 		P = P_rapp * P1
 		T = T_rapp * T1
@@ -259,6 +265,7 @@ for i in range(n):
 		data = (dy_dx, k_plus)
 		[theta_p, M_p] = fsolve(func1, [theta1, M1], args = data)
 
+		M = M_p
 		P_rapp, rho_rapp, T_rapp = isoentropic(M1, M_p, gamma) 
 		P = P_rapp * P1
 		T = T_rapp * T1
@@ -290,7 +297,7 @@ for i in range(n):
 		vx, vy = v*cos(eps4), v*sin(eps4)
 
 		# Zone f
-	elif y - tan(beta_top_rear)*x < 0 and y - tan(delta_slip)*(x-chord) > 0:
+	elif y - tan(beta_top_rear)*x < 0 and y - tan(delta_slip)*(x-chord) >= 0:
 		P = Pf
 		T = Tf
 		rho = rhof

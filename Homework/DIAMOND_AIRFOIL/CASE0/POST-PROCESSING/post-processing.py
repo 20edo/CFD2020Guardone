@@ -9,10 +9,10 @@ from paraview.simple import *
 paraview.simple._DisableFirstRenderCameraReset()
 
 # create a new 'XML Unstructured Grid Reader'
-flowvtu = XMLUnstructuredGridReader(FileName=['/home/edo20/CFD2020_Guardone/Homework/Diamond_Airfoil3/Working_dir/CFD/flow.vtu'])
+flowvtu = XMLUnstructuredGridReader(FileName=['/home/edo20/CFD2020_Guardone/Homework/DIAMOND_AIRFOIL/Working_dir/CFD/flow.vtu'])
 
 # create a new 'XML Unstructured Grid Reader'
-surface_flowvtu = XMLUnstructuredGridReader(FileName=['/home/edo20/CFD2020_Guardone/Homework/Diamond_Airfoil3/Working_dir/CFD/surface_flow.vtu'])
+surface_flowvtu = XMLUnstructuredGridReader(FileName=['/home/edo20/CFD2020_Guardone/Homework/DIAMOND_AIRFOIL/Working_dir/CFD/surface_flow.vtu'])
 
 # get active view
 renderView1 = GetActiveViewOrCreate('RenderView')
@@ -20,23 +20,23 @@ renderView1 = GetActiveViewOrCreate('RenderView')
 # renderView1.ViewSize = [1435, 795]
 
 # show data in view
-flowvtuDisplay = Show(flowvtu, renderView1)
+surface_flowvtuDisplay = Show(surface_flowvtu, renderView1)
 
 # trace defaults for the display properties.
-flowvtuDisplay.Representation = 'Surface'
+surface_flowvtuDisplay.Representation = 'Surface'
 
 # reset view to fit data
 renderView1.ResetCamera()
 
 #changing interaction mode based on data extents
-renderView1.InteractionMode = '2D'
-renderView1.CameraPosition = [0.0, 0.0, 10000.0]
+renderView1.CameraPosition = [0.5, 0.0, 10000.0]
+renderView1.CameraFocalPoint = [0.5, 0.0, 0.0]
 
 # show data in view
-surface_flowvtuDisplay = Show(surface_flowvtu, renderView1)
+flowvtuDisplay = Show(flowvtu, renderView1)
 
 # trace defaults for the display properties.
-surface_flowvtuDisplay.Representation = 'Surface'
+flowvtuDisplay.Representation = 'Surface'
 
 # update the view to ensure updated data information
 renderView1.Update()
@@ -44,16 +44,46 @@ renderView1.Update()
 # set active source
 SetActiveSource(flowvtu)
 
+# hide data in view
+Hide(surface_flowvtu, renderView1)
+
 # change representation type
 flowvtuDisplay.SetRepresentationType('Surface With Edges')
 
+# set scalar coloring
+ColorBy(flowvtuDisplay, ('POINTS', 'Mach'))
+
+# rescale color and/or opacity maps used to include current data range
+flowvtuDisplay.RescaleTransferFunctionToDataRange(True, False)
+
+# show color bar/color legend
+flowvtuDisplay.SetScalarBarVisibility(renderView1, True)
+
+# get color transfer function/color map for 'Mach'
+machLUT = GetColorTransferFunction('Mach')
+machLUT.RGBPoints = [0.8355953693389893, 0.0, 0.0, 0.34902, 0.882905900478363, 0.039216, 0.062745, 0.380392, 0.9302164316177368, 0.062745, 0.117647, 0.411765, 0.9775269627571106, 0.090196, 0.184314, 0.45098, 1.0248374938964844, 0.12549, 0.262745, 0.501961, 1.0721480250358582, 0.160784, 0.337255, 0.541176, 1.119458556175232, 0.2, 0.396078, 0.568627, 1.1667690873146057, 0.239216, 0.454902, 0.6, 1.2140796184539795, 0.286275, 0.521569, 0.65098, 1.2613901495933533, 0.337255, 0.592157, 0.701961, 1.308700680732727, 0.388235, 0.654902, 0.74902, 1.3560112118721008, 0.466667, 0.737255, 0.819608, 1.4033217430114746, 0.572549, 0.819608, 0.878431, 1.4506322741508484, 0.654902, 0.866667, 0.909804, 1.4979428052902222, 0.752941, 0.917647, 0.941176, 1.545253336429596, 0.823529, 0.956863, 0.968627, 1.5925638675689697, 0.988235, 0.960784, 0.901961, 1.5925638675689697, 0.941176, 0.984314, 0.988235, 1.622842607498169, 0.988235, 0.945098, 0.85098, 1.6531213474273683, 0.980392, 0.898039, 0.784314, 1.6871849298477173, 0.968627, 0.835294, 0.698039, 1.734495460987091, 0.94902, 0.733333, 0.588235, 1.7818059921264648, 0.929412, 0.65098, 0.509804, 1.8291165232658386, 0.909804, 0.564706, 0.435294, 1.8764270544052124, 0.878431, 0.458824, 0.352941, 1.9237375855445862, 0.839216, 0.388235, 0.286275, 1.97104811668396, 0.760784, 0.294118, 0.211765, 2.0183586478233337, 0.701961, 0.211765, 0.168627, 2.0656691789627075, 0.65098, 0.156863, 0.129412, 2.1129797101020813, 0.6, 0.094118, 0.094118, 2.160290241241455, 0.54902, 0.066667, 0.098039, 2.207600772380829, 0.501961, 0.05098, 0.12549, 2.2549113035202026, 0.45098, 0.054902, 0.172549, 2.3022218346595764, 0.4, 0.054902, 0.192157, 2.34953236579895, 0.34902, 0.070588, 0.211765]
+machLUT.ColorSpace = 'Lab'
+machLUT.NanColor = [0.25, 0.0, 0.0]
+machLUT.Discretize = 0
+machLUT.ScalarRangeInitialized = 1.0
+
+# get opacity transfer function/opacity map for 'Mach'
+machPWF = GetOpacityTransferFunction('Mach')
+machPWF.Points = [0.8355953693389893, 0.0, 0.5, 0.0, 2.34953236579895, 1.0, 0.5, 0.0]
+machPWF.ScalarRangeInitialized = 1
+
+# change representation type
+flowvtuDisplay.SetRepresentationType('Surface')
+
 # current camera placement for renderView1
 renderView1.InteractionMode = '2D'
-renderView1.CameraPosition = [0.0, 0.0, 10000.0]
-renderView1.CameraParallelScale = 141.4213562373095
+renderView1.CameraPosition = [0.5, 0.0, 10000.0]
+renderView1.CameraFocalPoint = [0.5, 0.0, 0.0]
+renderView1.CameraParallelScale = 0.5099019516515143
 
 # save screenshot
-SaveScreenshot('/home/edo20/CFD2020_Guardone/Homework/Diamond_Airfoil3/Working_dir/POST-PROCESSING/Mesh_far.png', renderView1, ImageResolution=[5740, 3180])
+SaveScreenshot('/home/edo20/CFD2020_Guardone/Homework/DIAMOND_AIRFOIL/Working_dir/POST-PROCESSING/Mach_Near.png', renderView1, ImageResolution=[5740, 3180],
+    OverrideColorPalette='BlackBackground')
 
 # create a new 'Programmable Filter'
 programmableFilter1 = ProgrammableFilter(Input=flowvtu)
@@ -104,7 +134,7 @@ alpha = 0
 gamma = 1.4 
 Pa = 1e5
 Ta = 300
-R = 8314/29
+R = 287.058
 Ma = 2
 rhoa = Pa/R/Ta
 
@@ -114,37 +144,37 @@ rhoa = Pa/R/Ta
 # Zone b
 Mb = 1.5914539462643529
 Pb = 182382.07623952895
-rhob = 1.774837188458829
+rhob = 1.7725597668291357
 Tb = 358.4359925960558
 
 # Zone c
 Mc = 2.41993911
 Pc = 50752.27539999
-rhoc = 0.71179311
+rhoc = 0.71087976
 Tc = 248.70797802
 
 # Zone d
 Md = 1.5914539462643529
 Pd = 182382.07623952895
-rhod = 1.774837188458829
-Td = 358.4359925960558 
+rhod = 1.7725597668291357
+Td = 358.4359925960558
 
 # Zone e
 Me = 2.41993911
 Pe = 50752.27539999
-rhoe = 0.71179311
+rhoe = 0.71087976
 Te = 248.70797802
 
 # Zone f
 Mf = 1.9633213799324059
 Pf = 100313.00454574
-rhof = 1.14749793
+rhof = 1.1460255
 Tf = 304.92519096
 
-# Zone g
+# Zone f
 Mg = 1.9633213799324059
 Pg = 100313.00454574
-rhog = 1.14749793
+rhog = 1.1460255
 Tg = 304.92519096
 
 # ============================================ Angles
@@ -227,7 +257,7 @@ for i in range(n):
 \tx, y, z = p
 \t
 \t# Naso
-\tif x == 0 and y == 0:
+\tif x == 0.0 and y == 0.0:
 \t\tP_rapp, rho_rapp, T_rapp = isoentropic(Ma, 0.0 , gamma)
 \t\tP = Pa*P_rapp
 \t\tT = Ta * T_rapp
@@ -238,7 +268,7 @@ for i in range(n):
 \t\tvx, vy = 0,0
 \t\t
 \t# Zone a
-\tif y - tan(beta_top)*x > 0 or  y - tan(beta_bot)*x < 0  :
+\telif y - tan(beta_top)*x > 0 or  y - tan(beta_bot)*x < 0  :
 \t\tP = Pa
 \t\tT = Ta
 \t\trho = rhoa
@@ -427,77 +457,156 @@ programmableFilter1Display.SetScalarBarVisibility(renderView1, True)
 
 # get color transfer function/color map for 'ExactMach'
 exactMachLUT = GetColorTransferFunction('ExactMach')
+exactMachLUT.RGBPoints = [0.0, 0.0, 0.0, 0.34902, 0.0756230971875, 0.039216, 0.062745, 0.380392, 0.151246194375, 0.062745, 0.117647, 0.411765, 0.22686929156250002, 0.090196, 0.184314, 0.45098, 0.30249238875, 0.12549, 0.262745, 0.501961, 0.3781154859375, 0.160784, 0.337255, 0.541176, 0.45373858312500004, 0.2, 0.396078, 0.568627, 0.5293616803125, 0.239216, 0.454902, 0.6, 0.6049847775, 0.286275, 0.521569, 0.65098, 0.6806078746875001, 0.337255, 0.592157, 0.701961, 0.756230971875, 0.388235, 0.654902, 0.74902, 0.8318540690625, 0.466667, 0.737255, 0.819608, 0.9074771662500001, 0.572549, 0.819608, 0.878431, 0.9831002634375, 0.654902, 0.866667, 0.909804, 1.058723360625, 0.752941, 0.917647, 0.941176, 1.1343464578125, 0.823529, 0.956863, 0.968627, 1.209969555, 0.988235, 0.960784, 0.901961, 1.209969555, 0.941176, 0.984314, 0.988235, 1.2583683372, 0.988235, 0.945098, 0.85098, 1.3067671194000001, 0.980392, 0.898039, 0.784314, 1.3612157493750001, 0.968627, 0.835294, 0.698039, 1.4368388465625, 0.94902, 0.733333, 0.588235, 1.51246194375, 0.929412, 0.65098, 0.509804, 1.5880850409375, 0.909804, 0.564706, 0.435294, 1.663708138125, 0.878431, 0.458824, 0.352941, 1.7393312353125001, 0.839216, 0.388235, 0.286275, 1.8149543325000002, 0.760784, 0.294118, 0.211765, 1.8905774296875, 0.701961, 0.211765, 0.168627, 1.966200526875, 0.65098, 0.156863, 0.129412, 2.0418236240625, 0.6, 0.094118, 0.094118, 2.11744672125, 0.54902, 0.066667, 0.098039, 2.1930698184375, 0.501961, 0.05098, 0.12549, 2.268692915625, 0.45098, 0.054902, 0.172549, 2.3443160128125, 0.4, 0.054902, 0.192157, 2.41993911, 0.34902, 0.070588, 0.211765]
+exactMachLUT.ColorSpace = 'Lab'
+exactMachLUT.NanColor = [0.25, 0.0, 0.0]
+exactMachLUT.Discretize = 0
+exactMachLUT.ScalarRangeInitialized = 1.0
 
 # get opacity transfer function/opacity map for 'ExactMach'
 exactMachPWF = GetOpacityTransferFunction('ExactMach')
+exactMachPWF.Points = [0.0, 0.0, 0.5, 0.0, 2.41993911, 1.0, 0.5, 0.0]
+exactMachPWF.ScalarRangeInitialized = 1
+
+# set active source
+SetActiveSource(flowvtu)
+
+# create a new 'Append Attributes'
+appendAttributes1 = AppendAttributes(Input=flowvtu)
+
+# set active source
+SetActiveSource(programmableFilter1)
+
+# set active source
+SetActiveSource(appendAttributes1)
+
+# set active source
+SetActiveSource(flowvtu)
+
+# destroy appendAttributes1
+Delete(appendAttributes1)
+del appendAttributes1
+
+# set active source
+SetActiveSource(programmableFilter1)
+
+# create a new 'Append Attributes'
+appendAttributes1 = AppendAttributes(Input=[flowvtu, programmableFilter1])
+
+# show data in view
+appendAttributes1Display = Show(appendAttributes1, renderView1)
+
+# trace defaults for the display properties.
+appendAttributes1Display.Representation = 'Surface'
+
+# hide data in view
+Hide(programmableFilter1, renderView1)
+
+# hide data in view
+Hide(flowvtu, renderView1)
+
+# show color bar/color legend
+appendAttributes1Display.SetScalarBarVisibility(renderView1, True)
+
+# update the view to ensure updated data information
+renderView1.Update()
 
 # set scalar coloring
-ColorBy(programmableFilter1Display, ('POINTS', 'Exact Mach', 'X'))
+ColorBy(appendAttributes1Display, ('POINTS', 'Exact Mach', 'Magnitude'))
 
-# rescale color and/or opacity maps used to exactly fit the current data range
-programmableFilter1Display.RescaleTransferFunctionToDataRange(False, False)
+# Hide the scalar bar for this color map if no visible data is colored by it.
+HideScalarBarIfNotNeeded(machLUT, renderView1)
 
-# Update a scalar bar component title.
-UpdateScalarBarsComponentTitle(exactMachLUT, programmableFilter1Display)
+# rescale color and/or opacity maps used to include current data range
+appendAttributes1Display.RescaleTransferFunctionToDataRange(True, False)
 
-# Rescale transfer function
-exactMachLUT.RescaleTransferFunction(0.0, 2.4199391099999996)
+# show color bar/color legend
+appendAttributes1Display.SetScalarBarVisibility(renderView1, True)
 
-# Rescale transfer function
-exactMachPWF.RescaleTransferFunction(0.0, 2.4199391099999996)
+# set scalar coloring
+ColorBy(appendAttributes1Display, ('POINTS', 'Mach'))
 
-# change representation type
-programmableFilter1Display.SetRepresentationType('Surface With Edges')
+# Hide the scalar bar for this color map if no visible data is colored by it.
+HideScalarBarIfNotNeeded(exactMachLUT, renderView1)
 
-# change representation type
-programmableFilter1Display.SetRepresentationType('Surface')
+# rescale color and/or opacity maps used to include current data range
+appendAttributes1Display.RescaleTransferFunctionToDataRange(True, False)
+
+# show color bar/color legend
+appendAttributes1Display.SetScalarBarVisibility(renderView1, True)
+
+# create a new 'Calculator'
+calculator1 = Calculator(Input=appendAttributes1)
+
+# Properties modified on calculator1
+calculator1.ResultArrayName = 'Mach_Difference'
+calculator1.Function = 'Mach - Exact Mach_Y'
+
+# show data in view
+calculator1Display = Show(calculator1, renderView1)
+
+# trace defaults for the display properties.
+calculator1Display.Representation = 'Surface'
+
+# hide data in view
+Hide(appendAttributes1, renderView1)
+
+# show color bar/color legend
+calculator1Display.SetScalarBarVisibility(renderView1, True)
+
+# update the view to ensure updated data information
+renderView1.Update()
+
+# get color transfer function/color map for 'Mach_Difference'
+mach_DifferenceLUT = GetColorTransferFunction('Mach_Difference')
+mach_DifferenceLUT.RGBPoints = [0.8355953693389893, 0.0, 0.0, 0.34902, 0.882905900478363, 0.039216, 0.062745, 0.380392, 0.9302164316177368, 0.062745, 0.117647, 0.411765, 0.9775269627571106, 0.090196, 0.184314, 0.45098, 1.0248374938964844, 0.12549, 0.262745, 0.501961, 1.0721480250358582, 0.160784, 0.337255, 0.541176, 1.119458556175232, 0.2, 0.396078, 0.568627, 1.1667690873146057, 0.239216, 0.454902, 0.6, 1.2140796184539795, 0.286275, 0.521569, 0.65098, 1.2613901495933533, 0.337255, 0.592157, 0.701961, 1.308700680732727, 0.388235, 0.654902, 0.74902, 1.3560112118721008, 0.466667, 0.737255, 0.819608, 1.4033217430114746, 0.572549, 0.819608, 0.878431, 1.4506322741508484, 0.654902, 0.866667, 0.909804, 1.4979428052902222, 0.752941, 0.917647, 0.941176, 1.545253336429596, 0.823529, 0.956863, 0.968627, 1.5925638675689697, 0.988235, 0.960784, 0.901961, 1.5925638675689697, 0.941176, 0.984314, 0.988235, 1.622842607498169, 0.988235, 0.945098, 0.85098, 1.6531213474273683, 0.980392, 0.898039, 0.784314, 1.6871849298477173, 0.968627, 0.835294, 0.698039, 1.734495460987091, 0.94902, 0.733333, 0.588235, 1.7818059921264648, 0.929412, 0.65098, 0.509804, 1.8291165232658386, 0.909804, 0.564706, 0.435294, 1.8764270544052124, 0.878431, 0.458824, 0.352941, 1.9237375855445862, 0.839216, 0.388235, 0.286275, 1.97104811668396, 0.760784, 0.294118, 0.211765, 2.0183586478233337, 0.701961, 0.211765, 0.168627, 2.0656691789627075, 0.65098, 0.156863, 0.129412, 2.1129797101020813, 0.6, 0.094118, 0.094118, 2.160290241241455, 0.54902, 0.066667, 0.098039, 2.207600772380829, 0.501961, 0.05098, 0.12549, 2.2549113035202026, 0.45098, 0.054902, 0.172549, 2.3022218346595764, 0.4, 0.054902, 0.192157, 2.34953236579895, 0.34902, 0.070588, 0.211765]
+mach_DifferenceLUT.ColorSpace = 'Lab'
+mach_DifferenceLUT.NanColor = [0.25, 0.0, 0.0]
+mach_DifferenceLUT.Discretize = 0
+mach_DifferenceLUT.ScalarRangeInitialized = 1.0
+
+# get opacity transfer function/opacity map for 'Mach_Difference'
+mach_DifferencePWF = GetOpacityTransferFunction('Mach_Difference')
+mach_DifferencePWF.Points = [0.8355953693389893, 0.0, 0.5, 0.0, 2.34953236579895, 1.0, 0.5, 0.0]
+mach_DifferencePWF.ScalarRangeInitialized = 1
+
+# set active source
+SetActiveSource(appendAttributes1)
+
+# set active source
+SetActiveSource(calculator1)
+
+# hide data in view
+Hide(calculator1, renderView1)
+
+# set active source
+SetActiveSource(calculator1)
+
+# show data in view
+calculator1Display = Show(calculator1, renderView1)
+
+# show color bar/color legend
+calculator1Display.SetScalarBarVisibility(renderView1, True)
+
+# reset view to fit data
+renderView1.ResetCamera()
 
 # current camera placement for renderView1
 renderView1.InteractionMode = '2D'
-renderView1.CameraPosition = [0.8429452549230618, 0.0429526244546783, 10000.0]
-renderView1.CameraFocalPoint = [0.8429452549230618, 0.0429526244546783, 0.0]
-renderView1.CameraParallelScale = 0.8228297760563104
+renderView1.CameraPosition = [0.8546586948049825, -0.0303070459150703, 546.4101615137755]
+renderView1.CameraFocalPoint = [0.8546586948049825, -0.0303070459150703, 0.0]
+renderView1.CameraParallelScale = 0.9956240290281356
 
 # save screenshot
-SaveScreenshot('/home/edo20/CFD2020_Guardone/Homework/Diamond_Airfoil3/Working_dir/POST-PROCESSING/Mach_near.png', renderView1, ImageResolution=[5740, 3180])
-
-# set active source
-SetActiveSource(surface_flowvtu)
-
-# create a new 'Plot Data'
-plotData1 = PlotData(Input=surface_flowvtu)
-
-# Create a new 'Line Chart View'
-lineChartView1 = CreateView('XYChartView')
-# uncomment following to set a specific view size
-# lineChartView1.ViewSize = [400, 400]
-
-# show data in view
-plotData1Display = Show(plotData1, lineChartView1)
-
-# get layout
-layout1 = GetLayoutByName("Layout #1")
-
-# add view to a layout so it's visible in UI
-AssignViewToLayout(view=lineChartView1, layout=layout1, hint=0)
-
-# Rescale transfer function
-exactMachLUT.RescaleTransferFunction(-10.0, 2.41993911)
-
-# Rescale transfer function
-exactMachPWF.RescaleTransferFunction(-10.0, 2.41993911)
-
-# save data
-SaveData('/home/edo20/CFD2020_Guardone/Homework/Diamond_Airfoil3/Working_dir/POST-PROCESSING/Dati_surface.csv', proxy=plotData1, Precision=7,
-    UseScientificNotation=1)
+SaveScreenshot('/home/edo20/CFD2020_Guardone/Homework/DIAMOND_AIRFOIL/Working_dir/POST-PROCESSING/Mach_Difference.png', renderView1, ImageResolution=[5740, 3180])
 
 #### saving camera placements for all active views
 
 # current camera placement for renderView1
 renderView1.InteractionMode = '2D'
-renderView1.CameraPosition = [0.8429452549230618, 0.0429526244546783, 10000.0]
-renderView1.CameraFocalPoint = [0.8429452549230618, 0.0429526244546783, 0.0]
-renderView1.CameraParallelScale = 0.8228297760563104
+renderView1.CameraPosition = [0.8546586948049825, -0.0303070459150703, 546.4101615137755]
+renderView1.CameraFocalPoint = [0.8546586948049825, -0.0303070459150703, 0.0]
+renderView1.CameraParallelScale = 0.9956240290281356
 
 #### uncomment the following to render all views
 # RenderAllViews()
