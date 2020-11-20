@@ -1,0 +1,3 @@
+Laminar:
+
+Use oly one scheme, perform mesh convergence analysis and compare with Blasius solution. Eventually add more or less compressiblity, or try with jst and roe+MUSC
