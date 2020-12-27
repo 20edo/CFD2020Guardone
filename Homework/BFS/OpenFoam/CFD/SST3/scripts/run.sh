@@ -17,7 +17,7 @@ ex constant/polyMesh/boundary <<EOEX
 EOEX
 
 # Map fields for the first simulation to achieve faster convergence
-mapFields ../SST1       -consistent     -latestTime     2>&1    > log/mapFields.log
+mapFields ../SST1       -consistent     2>&1    > log/mapFields.log
 
 # Renumber Mesh to reduce band and speed up the simulation
 renumberMesh 	-overwrite	2>&1	>	log/renumberMesh.log

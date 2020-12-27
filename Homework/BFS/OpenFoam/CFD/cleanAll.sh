@@ -6,3 +6,5 @@ cd ../SST3
 foamCleanTutorials
 cd ../SST4
 foamCleanTutorials
+cd ../../MESH
+rm *.msh
