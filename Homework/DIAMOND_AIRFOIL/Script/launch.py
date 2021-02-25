@@ -1,6 +1,6 @@
 # This script runs simulations of a diamond airfoil with different mesh sizes
 
-path = '/home/edo20/CFD2020_Guardone/Homework/DIAMOND_AIRFOIL'
+path = '/home/edo20/CFD2020Guardone/Homework/DIAMOND_AIRFOIL'
 
 # import necessary modules
 import sys
@@ -9,6 +9,8 @@ import numpy as np
 import subprocess as sbp
 import time
 from statistics import stdev
+import matplotlib.pyplot as plt
+from matplotlib import contour
 
 # Simulations parameters
 
@@ -17,10 +19,10 @@ from statistics import stdev
 #nh = len(profile_h)
 #nH = len(freestream_H)
 
-nh = 5
-nH = 2
+nh = 10
+nH = 5
 
-profile_h= np.linspace(start = 0.1, stop = 10, num = nh)		# Mesh size at the profile buondary
+profile_h= np.linspace(start = 0.01, stop = 0.5, num = nh)		# Mesh size at the profile buondary
 freestream_H= np.linspace(start = 5, stop = 50, num = nH)		# Mesh size at the freestream boundary
 
 print(profile_h)
@@ -70,7 +72,7 @@ for i in range(nh):
 		os.system('./CFD/solve.sh')
 
 
-		# Post-process
+		# Post-processa
 		os.system('pvpython POST-PROCESSING/post-processing.py')
 		Data = np.genfromtxt('POST-PROCESSING/Data.csv', delimiter = ',', names = True, dtype = None, skip_header=0)
 		Mach = Data['Mach']
@@ -89,8 +91,12 @@ for i in range(nh):
 # End of the loop
 
 # Global post-process
-np.savetxt(path + 'Mach_rms.csv', Mach_rms)
-plt.contour([h, H], Mach_rms, label = 'Mach rms')
-plt.legend()
-plt.show()
-plt.savefig(path + 'Mach_rms.svg')
+np.savetxt(path + '/Mach_rms.csv', Mach_rms)
+x, y = np.meshgrid(freestream_H, profile_h)
+figure = plt.contourf(x, y, Mach_rms, linestyles='dashed')
+plt.colorbar()
+plt.contour(x, y, Mach_rms, colors='k')
+plt.ylabel('Profile mesh dimension')
+plt.xlabel('Freestream mesh dimension')
+plt.title('Mach error rms')
+plt.savefig(path + '/Mach_rms.png', dpi=1e3)
