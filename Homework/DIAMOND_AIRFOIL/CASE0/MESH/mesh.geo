@@ -1,8 +1,8 @@
 // ================== Mesh of a diamond airfoil
 
 c = 1;		// Chord of the profile
-R = 100*c;	// Radius of the far-field boundary
-th = 5;		// Angle of the airfoil in degrees
+R = 10*c;	// Radius of the far-field boundary
+th = 5;	// Angle of the airfoil in degrees
 h = 0.05;	// Size of the elements on the airfoil
 H = 5;		// Size of the elementts on the farfield
 

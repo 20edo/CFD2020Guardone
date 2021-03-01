@@ -61,7 +61,7 @@ flowvtuDisplay.SetRepresentationType('Surface With Edges')
 # current camera placement for renderView1
 renderView1.InteractionMode = '2D'
 renderView1.CameraPosition = [0.0, 0.0, 10000.0]
-renderView1.CameraParallelScale = 116.87715391513181
+renderView1.CameraParallelScale = 1
 
 # save screenshot
 SaveScreenshot('/home/edo20/CFD2020Guardone/Homework/DIAMOND_AIRFOIL/Working_dir/POST-PROCESSING/Mesh_far.png', renderView1, ImageResolution=[2264, 1590],
@@ -176,7 +176,7 @@ streamTracer1Display.SetScalarBarVisibility(renderView1, True)
 
 # get color transfer function/color map for 'Velocity'
 velocityLUT = GetColorTransferFunction('Velocity')
-velocityLUT.RGBPoints = [392.9133964785527, 0.231373, 0.298039, 0.752941, 579.669619210583, 0.865003, 0.865003, 0.865003, 766.4258419426135, 0.705882, 0.0156863, 0.14902]
+velocityLUT.RGBPoints = [490, 0.231373, 0.298039, 0.752941, 579.669619210583, 0.865003, 0.865003, 0.865003, 720, 0.705882, 0.0156863, 0.14902]
 velocityLUT.ScalarRangeInitialized = 1.0
 
 # get opacity transfer function/opacity map for 'Velocity'
@@ -204,7 +204,7 @@ flowvtuDisplay.SetScalarBarVisibility(renderView1, True)
 
 # get color transfer function/color map for 'Density'
 densityLUT = GetColorTransferFunction('Density')
-densityLUT.RGBPoints = [0.5517352223396301, 0.231373, 0.298039, 0.752941, 1.2310039103031158, 0.865003, 0.865003, 0.865003, 1.9102725982666016, 0.705882, 0.0156863, 0.14902]
+densityLUT.RGBPoints = [0.65, 0.231373, 0.298039, 0.752941, 1.2310039103031158, 0.865003, 0.865003, 0.865003, 1.9, 0.705882, 0.0156863, 0.14902]
 densityLUT.ScalarRangeInitialized = 1.0
 
 # get opacity transfer function/opacity map for 'Density'
@@ -383,10 +383,10 @@ calculator1_1.Function = 'Energy/Density+Pressure/Density+0.5*mag(Velocity)^2'
 renderView1.Update()
 
 # Rescale transfer function
-totalenthalpyLUT.RescaleTransferFunction(637784.0526817071, 835069.9065900634)
+totalenthalpyLUT.RescaleTransferFunction(6e5, 8e5)
 
 # Rescale transfer function
-totalenthalpyPWF.RescaleTransferFunction(637784.0526817071, 835069.9065900634)
+totalenthalpyPWF.RescaleTransferFunction(6e5, 8e5)
 
 # current camera placement for renderView1
 renderView1.InteractionMode = '2D'
@@ -398,6 +398,158 @@ renderView1.CameraParallelScale = 1.4576931409000935
 SaveScreenshot('/home/edo20/CFD2020Guardone/Homework/DIAMOND_AIRFOIL/Working_dir/POST-PROCESSING/Total_enthalpy.png', renderView1, ImageResolution=[2904, 1590],
     OverrideColorPalette='WhiteBackground')
 
+# create a new 'Calculator'
+calculator2 = Calculator(Input=calculator1_1)
+calculator2.Function = ''
+
+# The following are my variables 
+E_tot_inf = 410608
+P_inf = 1e5
+rho_inf = 1.16121
+e_tot_inf = E_tot_inf - rho_inf
+h_tot_inf = e_tot_inf + P_inf * rho_inf
+stringa = 'Energy+Pressure/Density+0.5*Velocity.Velocity - ' + str(h_tot_inf)
+# Properties modified on calculator2
+calculator2.ResultArrayName = 'Total enthalpy - Total enthalpy at freestream'
+calculator2.Function = stringa
+
+# show data in view
+calculator2Display = Show(calculator2, renderView1)
+
+# trace defaults for the display properties.
+calculator2Display.Representation = 'Surface'
+calculator2Display.ColorArrayName = [None, '']
+calculator2Display.OSPRayScaleArray = 'Density'
+calculator2Display.OSPRayScaleFunction = 'PiecewiseFunction'
+calculator2Display.SelectOrientationVectors = 'Velocity'
+calculator2Display.ScaleFactor = 20.0
+calculator2Display.SelectScaleArray = 'Density'
+calculator2Display.GlyphType = 'Arrow'
+calculator2Display.GlyphTableIndexArray = 'Density'
+calculator2Display.GaussianRadius = 1.0
+calculator2Display.SetScaleArray = ['POINTS', 'Density']
+calculator2Display.ScaleTransferFunction = 'PiecewiseFunction'
+calculator2Display.OpacityArray = ['POINTS', 'Density']
+calculator2Display.OpacityTransferFunction = 'PiecewiseFunction'
+calculator2Display.DataAxesGrid = 'GridAxesRepresentation'
+calculator2Display.PolarAxes = 'PolarAxesRepresentation'
+calculator2Display.ScalarOpacityUnitDistance = 10.67438550346949
+
+# init the 'PiecewiseFunction' selected for 'ScaleTransferFunction'
+calculator2Display.ScaleTransferFunction.Points = [0.5517352223396301, 0.0, 0.5, 0.0, 1.9102725982666016, 1.0, 0.5, 0.0]
+
+# init the 'PiecewiseFunction' selected for 'OpacityTransferFunction'
+calculator2Display.OpacityTransferFunction.Points = [0.5517352223396301, 0.0, 0.5, 0.0, 1.9102725982666016, 1.0, 0.5, 0.0]
+
+# hide data in view
+Hide(calculator1, renderView1)
+
+# update the view to ensure updated data information
+renderView1.Update()
+
+# Properties modified on calculator2
+calculator2.Function = stringa
+
+# update the view to ensure updated data information
+renderView1.Update()
+
+# set scalar coloring
+ColorBy(calculator2Display, ('POINTS', 'Total enthalpy - Total enthalpy at freestream'))
+
+# rescale color and/or opacity maps used to include current data range
+calculator2Display.RescaleTransferFunctionToDataRange(True, False)
+
+# show color bar/color legend
+calculator2Display.SetScalarBarVisibility(renderView1, True)
+
+# get color transfer function/color map for 'Totalenthalpy'
+totalenthalpyLUT = GetColorTransferFunction('Total enthalpy - Total enthalpy at freestream')
+totalenthalpyLUT.RGBPoints = [594065.4500980072, 0.231373, 0.298039, 0.752941, 841829.7432298816, 0.865003, 0.865003, 0.865003, 1089594.036361756, 0.705882, 0.0156863, 0.14902]
+totalenthalpyLUT.ScalarRangeInitialized = 1.0
+
+# get opacity transfer function/opacity map for 'Totalenthalpy'
+totalenthalpyPWF = GetOpacityTransferFunction('Total enthalpy - Total enthalpy at freestream')
+totalenthalpyPWF.Points = [594065.4500980072, 0.0, 0.5, 0.0, 1089594.036361756, 1.0, 0.5, 0.0]
+totalenthalpyPWF.ScalarRangeInitialized = 1
+
+# hide data in view
+Hide(streamTracer1, renderView1)
+Hide(calculator1_1)
+# Properties modified on calculator2
+calculator2.Function = stringa
+
+# update the view to ensure updated data information
+renderView1.Update()
+
+# hide data in view
+Hide(flowvtu, renderView1)
+
+# Properties modified on calculator2
+calculator2.Function = stringa
+
+# update the view to ensure updated data information
+renderView1.Update()
+
+# get animation scene
+animationScene1 = GetAnimationScene()
+
+animationScene1.Play()
+
+# Properties modified on calculator2
+calculator2.Function = stringa
+
+# update the view to ensure updated data information
+renderView1.Update()
+
+# Properties modified on calculator2
+calculator2.Function = stringa
+
+# update the view to ensure updated data information
+renderView1.Update()
+
+# Rescale transfer function
+totalenthalpyLUT.RescaleTransferFunction(637784.0526817071, 835069.9065900634)
+
+# Rescale transfer function
+totalenthalpyPWF.RescaleTransferFunction(637784.0526817071, 835069.9065900634)
+
+# Properties modified on calculator2
+calculator2.Function = stringa
+
+# update the view to ensure updated data information
+renderView1.Update()
+
+# Rescale transfer function
+totalenthalpyLUT.RescaleTransferFunction(594065.4500980072, 1089594.036361756)
+
+# Rescale transfer function
+totalenthalpyPWF.RescaleTransferFunction(594065.4500980072, 1089594.036361756)
+
+# Properties modified on calculator1_1
+calculator2.Function = stringa
+
+# update the view to ensure updated data information
+renderView1.Update()
+
+# Rescale transfer function
+totalenthalpyLUT.RescaleTransferFunction(-1e5, 5e5)
+
+# Rescale transfer function
+totalenthalpyPWF.RescaleTransferFunction(-1e5, 5e5)
+
+# current camera placement for renderView1
+renderView1.InteractionMode = '2D'
+renderView1.CameraPosition = [0.9791297323781771, 0.014668610222894018, 10000.0]
+renderView1.CameraFocalPoint = [0.9791297323781771, 0.014668610222894018, 0.0]
+renderView1.CameraParallelScale = 1.4576931409000935
+
+# save screenshot
+SaveScreenshot('/home/edo20/CFD2020Guardone/Homework/DIAMOND_AIRFOIL/Working_dir/POST-PROCESSING/Total_enthalpy-htotinf.png', renderView1, ImageResolution=[2904, 1590],
+    OverrideColorPalette='WhiteBackground')
+    
+Hide(calculator2)
+
+#################################################
 # set active source
 SetActiveSource(flowvtu)
 
@@ -410,6 +562,7 @@ programmableFilter1.PythonPath = ''
 
 # Properties modified on programmableFilter1
 programmableFilter1.Script = """# Import necessary packages
+# Import necessary packages
 import matplotlib.pyplot as plt
 import numpy as np 
 import scipy as sp
@@ -455,72 +608,78 @@ gamma = 1.4
 Pa = 1e5
 Ta = 300
 R = 287.058
-Ma = 2
+Ma = 1.8
 rhoa = Pa/R/Ta
 
 # Recall values calculated by previous script
 
 # =============================== Values inside zones 
 # Zone b
-Mb = 1.5914539462643529
-Pb = 182382.07623952895
-rhob = 1.7725597668291357
-Tb = 358.4359925960558
+Mb = 1.5113818942649062
+Pb = 152768.9873626066
+Tb = 339.36114738132915
+rhob = rhob = 1.5682071357235274
+Vb = 558.1541011988293
 
 # Zone c
-Mc = 2.41993911
-Pc = 50752.27539999
-rhoc = 0.71087976
-Tc = 248.70797802
+Mc = 2.32313549
+Pc = 43975.95965155
+Tc = 237.7618413
+rhoc = 0.64432282
+Vc = 718.11576776
 
 # Zone d
-Md = 1.5914539462643529
-Pd = 182382.07623952895
-rhod = 1.7725597668291357
-Td = 358.4359925960558
+Md = 1.2759125784687726
+Pd = 206218.2578942544
+Td = 372.9658364131552
+rhod = 1.9261424673680811
+Vd = 493.9742269758489
 
 # Zone e
-Me = 2.41993911
-Pe = 50752.27539999
-rhoe = 0.71087976
+Me = 2.06433611
+Pe = 63940.06852015
 Te = 248.70797802
+rhoe = 0.71087976
+Ve = 676.10353686
 
 # Zone f
-Mf = 1.9633213799324059
-Pf = 100313.00454574
-rhof = 1.1460255
-Tf = 304.92519096
+Mf = 1.7545215148574134
+Pf = 100497.06834558
+Tf = 306.00324345
+rhof = 1.14408346
+Vf = 615.2768263116847
 
-# Zone f
-Mg = 1.9633213799324059
-Pg = 100313.00454574
-rhog = 1.1460255
-Tg = 304.92519096
+# Zone g
+Mg = 1.7655629480860935
+Pg = 100497.06834558
+Tg = 304.53804096
+rhog = 1.14958791
+Vg = 617.664763175894
 
 # ============================================ Angles
 
 # Top shock 
-beta_top  = 40.77535672 * pi/180
+beta_top  = 45.02919028 * pi/180
 
 # Bottom shock
-beta_bot = -40.77535672 * pi/180
+beta_bot = -47.16406711 * pi/180
 
 # Top expansion
-mu1_top = 50.23888440578768 * pi/180
-mu2_top = 13.098190617128276 * pi/180
+mu1_top = 62.91540263417585 * pi/180
+mu2_top = 17.664366055971083 * pi/180
 
 # Bottom expansion
-mu1_bot = -50.23888440578768 * pi/180
-mu2_bot = -13.098190617128276 * pi/180
+mu1_bot = -62.91540263417585 * pi/180
+mu2_bot = -17.664366055971083 * pi/180
 
 # Top rear shock
-beta_top_rear = 22.75160624 * pi/180
+beta_top_rear = 27.30125049 * pi/180
 
 # Bottom rear shock
-beta_bot_rear = -22.75160624 * pi/180
+beta_bot_rear = -24.94071889 * pi/180
 
 # Slip line 
-delta_slip = 0
+delta_slip = 3.08497876
 
 # Define isoentropic functions (usefull for expansion fan )
 
@@ -542,12 +701,12 @@ def isoentropic(M1,M2,gamma):
 pdi = self.GetInput()
 pdo = self.GetOutput()
 # Initialize
-coords\t\t= vtk.vtkDoubleArray()
-V_exact\t\t= vtk.vtkDoubleArray()
-P_exact\t\t= vtk.vtkDoubleArray()
-rho_exact\t= vtk.vtkDoubleArray()
-M_exact\t\t= vtk.vtkDoubleArray()
-T_exact\t\t= vtk.vtkDoubleArray()
+coords		= vtk.vtkDoubleArray()
+V_exact		= vtk.vtkDoubleArray()
+P_exact		= vtk.vtkDoubleArray()
+rho_exact	= vtk.vtkDoubleArray()
+M_exact		= vtk.vtkDoubleArray()
+T_exact		= vtk.vtkDoubleArray()
 
 # Set names
 coords.SetName("Coordinates")
@@ -570,177 +729,181 @@ n = pdi.GetNumberOfPoints()
 
 # =================================== Array values definition
 for i in range(n):
-\t
-\t# Get the coordinate of the point
-\t
-\tp=pdi.GetPoint(i)
-\tx, y, z = p
-\t
-\t# Naso
-\tif x == 0.0 and y == 0.0:
-\t\tP_rapp, rho_rapp, T_rapp = isoentropic(Ma, 0.0 , gamma)
-\t\tP = Pa*P_rapp
-\t\tT = Ta * T_rapp
-\t\trho = rho_rapp * rhoa
-\t\tc = sqrt(gamma*R*T)
-\t\tM = 0
-\t\tv = 0
-\t\tvx, vy = 0,0
-\t\t
-\t# Zone a
-\telif y - tan(beta_top)*x > 0 or  y - tan(beta_bot)*x < 0  :
-\t\tP = Pa
-\t\tT = Ta
-\t\trho = rhoa
-\t\tM = Ma
-\t\tc = sqrt(gamma*R*T)
-\t\tv = M*c
-\t\tvx, vy = v, 0
+	
+	# Get the coordinate of the point
+	
+	p=pdi.GetPoint(i)
+	x, y, z = p
+	
+	# Naso
+	if x == 0 and y == 0:
+		P_rapp, rho_rapp, T_rapp = isoentropic(Ma, 0.0 , gamma)
+		P = Pa*P_rapp
+		T = Ta * T_rapp
+		rho = rho_rapp * rhoa
+		c = sqrt(gamma*R*T)
+		M = 0
+		v = 0
+		vx, vy = 0,0
+		
+	# Zone a
+	elif y - tan(beta_top)*x > 0 or  y - tan(beta_bot)*x < 0  :
+		P = Pa
+		T = Ta
+		rho = rhoa
+		M = Ma
+		c = sqrt(gamma*R*T)
+		v = M*c
+		vx, vy = v, 0
 
 
-\t# Zone b 
-\telif y > 0 and y- tan(beta_top)*x < 0 and y - y_top - tan(mu1_top)*(x-x_top) > 0:
-        \tP = Pb
-        \tT = Tb
-        \trho = rhob
-        \tM = Mb
-        \tc = sqrt(gamma*R*T)
-        \tv = M*c
-        \tvx, vy = v*cos(eps1), v*sin(eps1)
+	# Zone b 
+	elif y > 0 and y- tan(beta_top)*x < 0 and y - y_top - tan(mu1_top)*(x-x_top) > 0:
+        	P = Pb
+        	T = Tb
+        	rho = rhob
+        	M = Mb
+        	c = sqrt(gamma*R*T)
+        	v = M*c
+        	vx, vy = v*cos(eps1), v*sin(eps1)
 
-\t# Expansion b-c
-\telif y > 0 and y - y_top - tan(mu1_top)*(x-x_top) < 0 and y - y_top - tan(mu2_top)*(x-x_top) > 0:
-\t#  mu_p = atan((yp-y_top)/(xp-x_top))  # Mu of the point p
-\t#  M = 1 / sin(mu_p)                 # Mach of the point p
-\t#  P_rapp, rho_rapp, T_rapp = isoentropic(Mb, M, gamma)
-\t#  P = P_rapp * Pb
-\t#  T = T_rapp * Tb
-\t#  c = sqrt(gamma*R*T)             # Speed of sound of the point p
-\t#  v = M * c                     # Magnitude of the speed of the point p
-\t#  vx, vy = v*cos(mu_p), v*(-sin(mu_p))
-\t\tM1 = Mb # Mach a monte del ventaglio di espansione 
-\t\tP1 = Pb # Pressione a monte del ventaglio
-\t\tT1 = Tb # Temperatura a monte del ventaglio
-\t\ttheta1 = eps1 # direzione della corrente prima del ventaglio (alpha, eps1, -eps2)
-\t\tk_minus = theta1 + prandtl_meyer_angle(M1)
-\t\tdy_dx = (y-y_top)/(x-x_top)
-\t\tdef func1(x,*data):
-\t\t\tdy_dx, k_minus = data
-\t\t\treturn [tan(x[0]+asin(1/x[1]))-dy_dx,
+	# Expansion b-c
+	elif y > 0 and y - y_top - tan(mu1_top)*(x-x_top) < 0 and y - y_top - tan(mu2_top)*(x-x_top) > 0:
+	#  mu_p = atan((yp-y_top)/(xp-x_top))  # Mu of the point p
+	#  M = 1 / sin(mu_p)                 # Mach of the point p
+	#  P_rapp, rho_rapp, T_rapp = isoentropic(Mb, M, gamma)
+	#  P = P_rapp * Pb
+	#  T = T_rapp * Tb
+	#  c = sqrt(gamma*R*T)             # Speed of sound of the point p
+	#  v = M * c                     # Magnitude of the speed of the point p
+	#  vx, vy = v*cos(mu_p), v*(-sin(mu_p))
+		M1 = Mb # Mach a monte del ventaglio di espansione 
+		P1 = Pb # Pressione a monte del ventaglio
+		T1 = Tb # Temperatura a monte del ventaglio
+		rho1 = rhob # Densità a monte del ventaglio
+		theta1 = eps1 # direzione della corrente prima del ventaglio (alpha, eps1, -eps2)
+		k_minus = theta1 + prandtl_meyer_angle(M1)
+		dy_dx = (y-y_top)/(x-x_top)
+		def func1(x,*data):
+			dy_dx, k_minus = data
+			return [tan(x[0]+asin(1/x[1]))-dy_dx,
 x[0]+prandtl_meyer_angle(x[1])-k_minus]   # x[0] = theta_p, x[1] = M_p
 
-\t\tdata = (dy_dx, k_minus)
-\t\t[theta_p, M_p] = fsolve(func1, [theta1, M1], args = data)
+		data = (dy_dx, k_minus)
+		[theta_p, M_p] = fsolve(func1, [theta1, M1], args = data)
 
-\t\tM = M_p
-\t\tP_rapp, rho_rapp, T_rapp = isoentropic(M1, M_p, gamma)
-\t\tP = P_rapp * P1
-\t\tT = T_rapp * T1
-\t\tc = sqrt(gamma*R*T)             # Speed of sound of the point p
-\t\tv = M * c                     # Magnitude of the speed of the point p
-\t\tvx, vy = v*cos(theta_p), v*sin(theta_p)
+		M = M_p
+		P_rapp, rho_rapp, T_rapp = isoentropic(M1, M_p, gamma)
+		P = P_rapp * P1
+		T = T_rapp * T1
+		rho = rho_rapp * rho1
+		c = sqrt(gamma*R*T)             # Speed of sound of the point p
+		v = M * c                     # Magnitude of the speed of the point p
+		vx, vy = v*cos(theta_p), v*sin(theta_p)
 
 
-\t# Zone d
-\telif y < 0 and y- tan(beta_bot)*x > 0 and y - y_bot - tan(mu1_bot)*(x-x_top) < 0:
-\t\tP = Pd
-\t\tT = Td
-\t\trho = rhod
-\t\tM = Md
-\t\tc = sqrt(gamma*R*T)
-\t\tv = M*c
-\t\tvx, vy = v*cos(eps3), -v*sin(eps3)
+	# Zone d
+	elif y < 0 and y- tan(beta_bot)*x > 0 and y - y_bot - tan(mu1_bot)*(x-x_top) < 0:
+		P = Pd
+		T = Td
+		rho = rhod
+		M = Md
+		c = sqrt(gamma*R*T)
+		v = M*c
+		vx, vy = v*cos(eps3), -v*sin(eps3)
 
-\t# Expansion d-e
-\telif y < 0 and y - y_bot - tan(mu1_bot)*(x-x_bot) > 0 and y - y_bot - tan(mu2_bot)*(x-x_bot) < 0:
-\t#  mu_p = - atan((yp-y_bot)/(xp-x_bot))  # Mu of the point p
-\t#  M = 1 / sin(mu_p)                   # Mach of the point p
-\t#  P_rapp, rho_rapp, T_rapp = isoentropic(Mb, M, gamma)
-\t#  P = P_rapp * Pb
-\t#  T = T_rapp * T
-\t#  c = sqrt(gamma*R*T)               # Speed of sound of the point p
-\t#  v = M * c                       # Magnitude of the speed of the point p
-\t#  vx, vy = v*cos(mu_p), v_p*(sin(mu_p))
+	# Expansion d-e
+	elif y < 0 and y - y_bot - tan(mu1_bot)*(x-x_bot) > 0 and y - y_bot - tan(mu2_bot)*(x-x_bot) < 0:
+	#  mu_p = - atan((yp-y_bot)/(xp-x_bot))  # Mu of the point p
+	#  M = 1 / sin(mu_p)                   # Mach of the point p
+	#  P_rapp, rho_rapp, T_rapp = isoentropic(Mb, M, gamma)
+	#  P = P_rapp * Pb
+	#  T = T_rapp * T
+	#  c = sqrt(gamma*R*T)               # Speed of sound of the point p
+	#  v = M * c                       # Magnitude of the speed of the point p
+	#  vx, vy = v*cos(mu_p), v_p*(sin(mu_p))
 
-\t\tM1 = Md # Mach a monte del ventaglio di espansione 
-\t\tP1 = Pd # Pressione a monte del ventaglio
-\t\tT1 = Td # Temperatura a monte del ventaglio
-\t\ttheta1 = -eps3 # direzione della corrente prima del ventaglio (alpha, -eps3, eps4)
-\t\tk_plus = theta1 - prandtl_meyer_angle(M1)
-\t\tdy_dx = (y-y_bot)/(x-x_bot)
+		M1 = Md # Mach a monte del ventaglio di espansione 
+		P1 = Pd # Pressione a monte del ventaglio
+		T1 = Td # Temperatura a monte del ventaglio
+		rho1 = rhod # Densità a monte del ventaglio
+		theta1 = -eps3 # direzione della corrente prima del ventaglio (alpha, -eps3, eps4)
+		k_plus = theta1 - prandtl_meyer_angle(M1)
+		dy_dx = (y-y_bot)/(x-x_bot)
   
-\t\tdef func1(x,*data):
-\t\t\tdy_dx, k_plus = data
-\t\t\treturn [tan(x[0]-asin(1/x[1]))-dy_dx, x[0]-prandtl_meyer_angle(x[1])-k_plus]   # x[0] = theta_p, x[1] = M_p
-\t\t
-\t\tdata = (dy_dx, k_plus)
-\t\t[theta_p, M_p] = fsolve(func1, [theta1, M1], args = data)
+		def func1(x,*data):
+			dy_dx, k_plus = data
+			return [tan(x[0]-asin(1/x[1]))-dy_dx, x[0]-prandtl_meyer_angle(x[1])-k_plus]   # x[0] = theta_p, x[1] = M_p
+		
+		data = (dy_dx, k_plus)
+		[theta_p, M_p] = fsolve(func1, [theta1, M1], args = data)
 
-\t\tM = M_p
-\t\tP_rapp, rho_rapp, T_rapp = isoentropic(M1, M_p, gamma) 
-\t\tP = P_rapp * P1
-\t\tT = T_rapp * T1
-\t\tc = sqrt(gamma*R*T)             # Speed of sound of the point p
-\t\tv = M * c                     # Magnitude of the speed of the point p
-\t\tvx, vy = v*cos(theta_p), v*sin(theta_p)
+		M = M_p
+		P_rapp, rho_rapp, T_rapp = isoentropic(M1, M_p, gamma) 
+		P = P_rapp * P1
+		T = T_rapp * T1
+		rho = rho_rapp * rho1
+		c = sqrt(gamma*R*T)             # Speed of sound of the point p
+		v = M * c                     # Magnitude of the speed of the point p
+		vx, vy = v*cos(theta_p), v*sin(theta_p)
 
 
 
 # if case == 5: # doppio shock
-\t\t# Zone c
-\telif y > 0 and y - y_top - tan(mu2_top)*(x-x_top) < 0 and y - tan(beta_top_rear)*(x- chord) > 0:
-\t\tP = Pc
-\t\tT = Tc
-\t\trho = rhoc
-\t\tM = Mc
-\t\tc = sqrt(gamma*R*T)
-\t\tv = M*c
-\t\tvx, vy = v*cos(eps2), -v*sin(eps1)
+		# Zone c
+	elif y > 0 and y - y_top - tan(mu2_top)*(x-x_top) < 0 and y - tan(beta_top_rear)*(x- chord) > 0:
+		P = Pc
+		T = Tc
+		rho = rhoc
+		M = Mc
+		c = sqrt(gamma*R*T)
+		v = M*c
+		vx, vy = v*cos(eps2), -v*sin(eps1)
 
-\t\t# Zone e
-\telif y < 0 and y - y_bot - tan(mu2_bot)*(x-x_bot) > 0 and y - tan(beta_bot_rear)*(x- chord) < 0:
-\t\tP = Pe
-\t\tT = Te
-\t\trho = rhoe
-\t\tM = Me
-\t\tc = sqrt(gamma*R*T)
-\t\tv = M*c
-\t\tvx, vy = v*cos(eps4), v*sin(eps4)
+		# Zone e
+	elif y < 0 and y - y_bot - tan(mu2_bot)*(x-x_bot) > 0 and y - tan(beta_bot_rear)*(x- chord) < 0:
+		P = Pe
+		T = Te
+		rho = rhoe
+		M = Me
+		c = sqrt(gamma*R*T)
+		v = M*c
+		vx, vy = v*cos(eps4), v*sin(eps4)
 
-\t\t# Zone f
-\telif y - tan(beta_top_rear)*x < 0 and y - tan(delta_slip)*(x-chord) >= 0:
-\t\tP = Pf
-\t\tT = Tf
-\t\trho = rhof
-\t\tM = Mf
-\t\tc = sqrt(gamma*R*T)
-\t\tv = M*c
-\t\tvx, vy = v*cos(delta_slip), v*sin(delta_slip)
-\t\t# Zone g 
-\telif y - tan(beta_bot_rear)*(x- chord) > 0 and y - tan(delta_slip)*(x- chord) < 0:
-\t\tP = Pg
-\t\tT = Tg
-\t\trho = rhog
-\t\tM = Mg
-\t\tc = sqrt(gamma*R*T)
-\t\tv = M*c
-\t\tvx, vy = v*cos(delta_slip), v*sin(delta_slip)
-\telse:
-\t\tP = -10
-\t\tT = -10
-\t\trho = -10
-\t\tM = -10
-\t\tc = -10
-\t\tv = -10
-\t\tvx, vy = -10, -10\t
-\t\t
+		# Zone f
+	elif y - tan(beta_top_rear)*x < 0 and y - tan(delta_slip)*(x-chord) >= 0:
+		P = Pf
+		T = Tf
+		rho = rhof
+		M = Mf
+		c = sqrt(gamma*R*T)
+		v = M*c
+		vx, vy = v*cos(delta_slip), v*sin(delta_slip)
+		# Zone g 
+	elif y - tan(beta_bot_rear)*(x- chord) > 0 and y - tan(delta_slip)*(x- chord) < 0:
+		P = Pg
+		T = Tg
+		rho = rhog
+		M = Mg
+		c = sqrt(gamma*R*T)
+		v = M*c
+		vx, vy = v*cos(delta_slip), v*sin(delta_slip)
+	else:
+		P = -10
+		T = -10
+		rho = -10
+		M = -10
+		c = -10
+		v = -10
+		vx, vy = -10, -10	
+		
     #    ================= Insert values in the arrays
-\tcoords.InsertNextTuple3(x, y, z)
-\tV_exact.InsertNextTuple3(vx,vy,0)
-\tP_exact.InsertNextTuple2(P,0)
-\trho_exact.InsertNextTuple2(rho,0)
-\tT_exact.InsertNextTuple2(T,0)
-\tM_exact.InsertNextTuple2(M,0)
+	coords.InsertNextTuple3(x, y, z)
+	V_exact.InsertNextTuple3(vx,vy,0)
+	P_exact.InsertNextTuple2(P,0)
+	rho_exact.InsertNextTuple2(rho,0)
+	T_exact.InsertNextTuple2(T,0)
+	M_exact.InsertNextTuple2(M,0)
 
 # ================================= Append array fields to point data and output
 pdo.GetPointData().AddArray(coords)
@@ -749,6 +912,7 @@ pdo.GetPointData().AddArray(P_exact)
 pdo.GetPointData().AddArray(rho_exact)
 pdo.GetPointData().AddArray(M_exact)
 pdo.GetPointData().AddArray(T_exact)
+
 """
 programmableFilter1.RequestInformationScript = ''
 programmableFilter1.RequestUpdateExtentScript = ''
@@ -1243,10 +1407,10 @@ calculator2Display.SetScalarBarVisibility(renderView1, True)
 renderView1.Update()
 
 # Rescale transfer function
-mach_errorLUT.RescaleTransferFunction(-1.0, 1.0)
+mach_errorLUT.RescaleTransferFunction(-0.5, 0.5)
 
 # Rescale transfer function
-mach_errorPWF.RescaleTransferFunction(-1.0, 1.0)
+mach_errorPWF.RescaleTransferFunction(-0.5, 0.5)
 
 # Apply a preset using its name. Note this may not work as expected when presets have duplicate names.
 mach_errorLUT.ApplyPreset('jet', True)

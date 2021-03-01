@@ -53,38 +53,44 @@ rhoa = Pa/R/Ta
 # Zone b
 Mb = 1.5914539462643529
 Pb = 182382.07623952895
-rhob = 1.7725597668291357
 Tb = 358.4359925960558
+rhob = 1.7725597668291357
+Vb = 604.0163953582135
 
 # Zone c
 Mc = 2.41993911
 Pc = 50752.27539999
-rhoc = 0.71087976
 Tc = 248.70797802
+rhoc = 0.71087976
+Vc = 765.06466178
 
 # Zone d
 Md = 1.5914539462643529
 Pd = 182382.07623952895
-rhod = 1.7725597668291357
 Td = 358.4359925960558
+rhod = 1.7725597668291357
+Vd = 604.0163953582135
 
 # Zone e
 Me = 2.41993911
 Pe = 50752.27539999
-rhoe = 0.71087976
 Te = 248.70797802
+rhoe = 0.71087976
+Ve = 765.06466178
 
 # Zone f
 Mf = 1.9633213799324059
 Pf = 100313.00454574
-rhof = 1.1460255
 Tf = 304.92519096
+rhof = 1.1460255
+Vf = 687.2850440270618
 
-# Zone f
+# Zone g
 Mg = 1.9633213799324059
 Pg = 100313.00454574
-rhog = 1.1460255
 Tg = 304.92519096
+rhog = 1.1460255
+Vg = 687.2850440270618
 
 # ============================================ Angles
 
@@ -166,7 +172,7 @@ for i in range(n):
 	x, y, z = p
 	
 	# Naso
-	if x == 0.0 and y == 0.0:
+	if x == 0 and y == 0:
 		P_rapp, rho_rapp, T_rapp = isoentropic(Ma, 0.0 , gamma)
 		P = Pa*P_rapp
 		T = Ta * T_rapp
@@ -210,6 +216,7 @@ for i in range(n):
 		M1 = Mb # Mach a monte del ventaglio di espansione 
 		P1 = Pb # Pressione a monte del ventaglio
 		T1 = Tb # Temperatura a monte del ventaglio
+		rho1 = rhob # Densità a monte del ventaglio
 		theta1 = eps1 # direzione della corrente prima del ventaglio (alpha, eps1, -eps2)
 		k_minus = theta1 + prandtl_meyer_angle(M1)
 		dy_dx = (y-y_top)/(x-x_top)
@@ -225,6 +232,7 @@ x[0]+prandtl_meyer_angle(x[1])-k_minus]   # x[0] = theta_p, x[1] = M_p
 		P_rapp, rho_rapp, T_rapp = isoentropic(M1, M_p, gamma)
 		P = P_rapp * P1
 		T = T_rapp * T1
+		rho = rho_rapp * rho1
 		c = sqrt(gamma*R*T)             # Speed of sound of the point p
 		v = M * c                     # Magnitude of the speed of the point p
 		vx, vy = v*cos(theta_p), v*sin(theta_p)
@@ -254,6 +262,7 @@ x[0]+prandtl_meyer_angle(x[1])-k_minus]   # x[0] = theta_p, x[1] = M_p
 		M1 = Md # Mach a monte del ventaglio di espansione 
 		P1 = Pd # Pressione a monte del ventaglio
 		T1 = Td # Temperatura a monte del ventaglio
+		rho1 = rhod # Densità a monte del ventaglio
 		theta1 = -eps3 # direzione della corrente prima del ventaglio (alpha, -eps3, eps4)
 		k_plus = theta1 - prandtl_meyer_angle(M1)
 		dy_dx = (y-y_bot)/(x-x_bot)
@@ -269,6 +278,7 @@ x[0]+prandtl_meyer_angle(x[1])-k_minus]   # x[0] = theta_p, x[1] = M_p
 		P_rapp, rho_rapp, T_rapp = isoentropic(M1, M_p, gamma) 
 		P = P_rapp * P1
 		T = T_rapp * T1
+		rho = rho_rapp * rho1
 		c = sqrt(gamma*R*T)             # Speed of sound of the point p
 		v = M * c                     # Magnitude of the speed of the point p
 		vx, vy = v*cos(theta_p), v*sin(theta_p)

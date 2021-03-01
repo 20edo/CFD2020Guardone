@@ -20,10 +20,10 @@ from matplotlib import contour
 #nH = len(freestream_H)
 
 nh = 10
-nH = 5
+nH = 10
 
 profile_h= np.linspace(start = 0.01, stop = 0.5, num = nh)		# Mesh size at the profile buondary
-freestream_H= np.linspace(start = 5, stop = 50, num = nH)		# Mesh size at the freestream boundary
+freestream_H= np.linspace(start = 0.5, stop = 5, num = nH)		# Mesh size at the freestream boundary
 
 print(profile_h)
 print(freestream_H)
