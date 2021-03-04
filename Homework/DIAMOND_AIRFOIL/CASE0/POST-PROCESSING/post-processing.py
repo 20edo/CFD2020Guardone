@@ -56,12 +56,12 @@ renderView1.CameraPosition = [0.0, 0.0, 10000.0]
 renderView1.Update()
 
 # change representation type
-flowvtuDisplay.SetRepresentationType('Surface With Edges')
+flowvtuDisplay.SetRepresentationType('Wireframe')
 
 # current camera placement for renderView1
 renderView1.InteractionMode = '2D'
 renderView1.CameraPosition = [0.0, 0.0, 10000.0]
-renderView1.CameraParallelScale = 1
+renderView1.CameraParallelScale = 10
 
 # save screenshot
 SaveScreenshot('/home/edo20/CFD2020Guardone/Homework/DIAMOND_AIRFOIL/Working_dir/POST-PROCESSING/Mesh_far.png', renderView1, ImageResolution=[2264, 1590],
@@ -71,7 +71,7 @@ SaveScreenshot('/home/edo20/CFD2020Guardone/Homework/DIAMOND_AIRFOIL/Working_dir
 renderView1.InteractionMode = '2D'
 renderView1.CameraPosition = [0.44005830668682094, -0.01100145766717052, 10000.0]
 renderView1.CameraFocalPoint = [0.44005830668682094, -0.01100145766717052, 0.0]
-renderView1.CameraParallelScale = 1.2047050751240445
+renderView1.CameraParallelScale = 1
 
 # save screenshot
 SaveScreenshot('/home/edo20/CFD2020Guardone/Homework/DIAMOND_AIRFOIL/Working_dir/POST-PROCESSING/Mesh_near.png', renderView1, ImageResolution=[2264, 1590],
@@ -204,7 +204,7 @@ flowvtuDisplay.SetScalarBarVisibility(renderView1, True)
 
 # get color transfer function/color map for 'Density'
 densityLUT = GetColorTransferFunction('Density')
-densityLUT.RGBPoints = [0.65, 0.231373, 0.298039, 0.752941, 1.2310039103031158, 0.865003, 0.865003, 0.865003, 1.9, 0.705882, 0.0156863, 0.14902]
+densityLUT.RGBPoints = [0.54, 0.231373, 0.298039, 0.752941, 1.2310039103031158, 0.865003, 0.865003, 0.865003, 2, 0.705882, 0.0156863, 0.14902]
 densityLUT.ScalarRangeInitialized = 1.0
 
 # get opacity transfer function/opacity map for 'Density'
@@ -1019,7 +1019,7 @@ plotOverLine1 = PlotOverLine(Input=appendAttributes1,
 
 # init the 'High Resolution Line Source' selected for 'Source'
 plotOverLine1.Source.Point1 = [0.0, 0.3, 0.0]
-plotOverLine1.Source.Point2 = [2.5, 0.3, 0.0]
+plotOverLine1.Source.Point2 = [2.5, -0.2, 0.0]
 
 # show data in view
 plotOverLine1Display = Show(plotOverLine1, renderView1)

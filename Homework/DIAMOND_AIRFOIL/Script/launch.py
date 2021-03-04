@@ -3,6 +3,7 @@
 path = '/home/edo20/CFD2020Guardone/Homework/DIAMOND_AIRFOIL'
 
 # import necessary modules
+from matplotlib import ticker
 import sys
 import os
 import numpy as np
@@ -22,8 +23,8 @@ from matplotlib import contour
 nh = 10
 nH = 10
 
-profile_h= np.linspace(start = 0.01, stop = 0.5, num = nh)		# Mesh size at the profile buondary
-freestream_H= np.linspace(start = 0.5, stop = 5, num = nH)		# Mesh size at the freestream boundary
+profile_h = np.logspace(start = 0, stop = -2, num = nh, base = 10)		# Mesh size at the profile buondary
+freestream_H = np.logspace(start = 0.5, stop = -1, num = nH, base = 10)		# Mesh size at the freestream boundary
 
 print(profile_h)
 print(freestream_H)
@@ -93,9 +94,11 @@ for i in range(nh):
 # Global post-process
 np.savetxt(path + '/Mach_rms.csv', Mach_rms)
 x, y = np.meshgrid(freestream_H, profile_h)
-figure = plt.contourf(x, y, Mach_rms, linestyles='dashed')
+figure = plt.contourf(x, y, Mach_rms, linestyles='dashed', locator=ticker.LogLocator(subs='all'))
 plt.colorbar()
-plt.contour(x, y, Mach_rms, colors='k')
+#plt.contour(x, y, Mach_rms, colors='k')
+plt.xscale('log')
+plt.yscale('log')
 plt.ylabel('Profile mesh dimension')
 plt.xlabel('Freestream mesh dimension')
 plt.title('Mach error rms')
